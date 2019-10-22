@@ -1,0 +1,101 @@
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <style>
+        #myform {
+            margin: auto 35%;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+    <div id="myform">
+        <h2>注册页面</h2>
+        <form action="/register/" method="post" id="form">
+            <p><input type="text" name="username" id="username" placeholder="用户名"
+                      onchange="reTest('username',USER_RE)"><span></span></p>
+            <p><input type="password" name="password" id="password" placeholder="密 码"
+                      onchange="reTest('password',PASSWORD_RE);"
+                      onkeyup="reTest('password',PASSWORD_RE);"><span></span>
+            </p>
+            <p><input type="password" name="re_password" id="re_password" placeholder="重新输入密码"
+                      onkeyup="reTest('re_password',PASSWORD_RE)"><span></span></p>
+            <p>性别:<input type="radio" name="sex" class="sex" value="1" checked>男
+                <input type="radio" name="sex" class="sex" value="0">女</p>
+            <p>生日:<input type="date" id="birthday" name="birthday"
+                         onchange="reTest('birthday',BIRTHDAY_RE)"><span></span></p>
+            <p><input type="email" name="email" id="email" placeholder="邮 箱"
+                      onkeyup="reTest('email',EMAIL_RE)"
+                      onchange="reTest('email',EMAIL_RE)"
+            ><span></span>
+            </p>
+            <p><input type="number" name="phone" id="phone" onkeyup="reTest('phone',PHONE_RE)"
+                      placeholder="手机"
+                      onchange="reTest('phone',PHONE_RE)"
+            ><span></span></p>
+            {% csrf_token %}
+            <input type="button" onclick="submitData()" value="提交">
+        </form>
+    </div>
+</div> <!-- /container -->
+
+
+<script>
+    const USER_RE = /^\w{2,10}$/;
+    const PASSWORD_RE = /^\w{6,20}$/;
+    const BIRTHDAY_RE = /^((19[2-9]\d{1})|(20((0[0-9])|(1[0-9]))))\-((0?[1-9])|(1[0-2]))\-((0?[1-9])|([1-2][0-9])|30|31)$/;
+    const EMAIL_RE = /^\w+@\w+\.\w{2,}$/;
+    const PHONE_RE = /^1(3|4|5|6|7|8|9)\d{9}$/;
+
+    function testPassword(idName) {
+        if (idName === "re_password") {
+            let pwd1 = document.getElementById("password");
+            let pwd2 = document.getElementById("re_password");
+            return pwd1.value === pwd2.value;
+        } else {
+            return true;
+        }
+    }
+
+    function reTest(idName, reObj) {
+        let elementObj = document.getElementById(idName);
+        let result = elementObj.value.trim();
+
+        if (reObj.test(result) && testPassword(idName)) {
+            elementObj.nextElementSibling.innerHTML = "<font color='green'>&nbsp;&nbsp;成功</font>";
+            return true
+        } else {
+            elementObj.nextElementSibling.innerHTML = "<font color='red'>&nbsp;&nbsp;失败</font>";
+            return false
+        }
+    }
+
+
+    function submitData() {
+        let i = 0;
+        let args = [['username', USER_RE], ['password', PASSWORD_RE], ['re_password', PASSWORD_RE], ['birthday', BIRTHDAY_RE], ['email', EMAIL_RE], ['phone', PHONE_RE]];
+        for (i in args) {
+            if (!reTest(...args[i])) {
+                alert("提交失败！");
+                return false;
+            }
+        }
+        let form = document.getElementById("form");
+        form.submit();
+        alert("提交成功！");
+        return true;
+    }
+
+</script>
+</body>
+</html>
